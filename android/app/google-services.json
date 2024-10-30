@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "684720361717",
+    "project_id": "cookbotapp",
+    "storage_bucket": "cookbotapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:684720361717:android:c131351da04c19ae9f75bc",
+        "android_client_info": {
+          "package_name": "com.cookbot.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjB0mQ_RQ5YSjK4tG5AHndNkOwbIIwEdk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:684720361717:android:b43659214bef63ae9f75bc",
+        "android_client_info": {
+          "package_name": "com.cookbot.cookbot"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjB0mQ_RQ5YSjK4tG5AHndNkOwbIIwEdk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

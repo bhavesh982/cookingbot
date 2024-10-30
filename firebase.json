@@ -1,0 +1,1 @@
+{"flutter":{"platforms":{"android":{"default":{"projectId":"cookbotapp","appId":"1:684720361717:android:b43659214bef63ae9f75bc","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"cookbotapp","configurations":{"android":"1:684720361717:android:b43659214bef63ae9f75bc","ios":"1:684720361717:ios:70787e3cdfffc68e9f75bc"}}}}}}
