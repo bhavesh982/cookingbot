@@ -20,6 +20,7 @@ class AuthRepository {
   final FirebaseAuth firebaseAuth;
   final FirebaseFirestore firestore;
 
+  // Dependency Injection via Constructor
   AuthRepository(this.firebaseAuth, this.firestore);
 
   Future<void> signIn(String email, String password) async {
@@ -29,15 +30,29 @@ class AuthRepository {
     );
   }
 
-  Future<void> signUp(String email, String password) async {
+  Future<void> signUp({
+    required String email,
+    required String password,
+    required String name,
+    String? profilePictureUrl,
+    Map<String, dynamic>? preferences,
+  }) async {
     final userCredential = await firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
 
-    await firestore.collection('users').doc(userCredential.user?.uid).set({
+    final userId = userCredential.user?.uid;
+
+    await firestore.collection('users').doc(userId).set({
+      'name': name,
       'email': email,
+      'profilePicture': profilePictureUrl ?? '',
+      'preferences': preferences ?? {},
+      'savedRecipes': [],
+      'submittedRecipes': [],
       'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
     });
   }
 
@@ -47,5 +62,8 @@ class AuthRepository {
 }
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  return AuthRepository(ref.watch(firebaseAuthProvider), ref.watch(firebaseFirestoreProvider));
+  return AuthRepository(
+    ref.watch(firebaseAuthProvider),
+    ref.watch(firebaseFirestoreProvider),
+  );
 });
