@@ -1,4 +1,4 @@
-import 'package:cookbot/functional/CreateRecipiePage.dart';
+import 'package:cookbot/pages/CreateRecipiePage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../auth/AuthScreen.dart';

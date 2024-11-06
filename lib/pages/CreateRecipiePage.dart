@@ -6,9 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 import '../models/RecipieModel.dart';
-import 'RecipieUploadNotifier.dart';
-
-
+import '../functional/RecipieUploadNotifier.dart';
 class CreateRecipePage extends ConsumerStatefulWidget {
   const CreateRecipePage({super.key});
 
@@ -38,7 +36,12 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
       });
     }
   }
-
+  void _removeImage() {
+    setState(() {
+      _imageFile = null;
+      _imageUrl = null;
+    });
+  }
   Future<void> _uploadImage() async {
     if (_imageFile == null) return;
     final storageRef = FirebaseStorage.instance.ref().child('recipes/${DateTime.now().toString()}');
@@ -126,7 +129,6 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (uploadState.isLoading) Center(child: CircularProgressIndicator()),
-
             TextField(
               controller: _titleController,
               decoration: InputDecoration(labelText: 'Title'),
@@ -170,11 +172,21 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
             ),
             SizedBox(height: 16),
             _imageFile != null
-                ? Image.file(_imageFile!)
+                ? Column(
+              children: [
+                Image.file(_imageFile!),
+                SizedBox(height: 8),
+                TextButton(
+                  onPressed: _removeImage,
+                  child: Text('Remove Image'),
+                ),
+              ],
+            )
                 : TextButton(
               onPressed: _pickImage,
               child: Text('Pick Image'),
             ),
+
             SizedBox(height: 16),
             ElevatedButton(
               onPressed: uploadState.isLoading ? null : _submitRecipe,
