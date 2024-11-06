@@ -7,6 +7,7 @@ import 'dart:io';
 
 import '../models/RecipieModel.dart';
 import '../functional/RecipieUploadNotifier.dart';
+
 class CreateRecipePage extends ConsumerStatefulWidget {
   const CreateRecipePage({super.key});
 
@@ -36,12 +37,14 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
       });
     }
   }
+
   void _removeImage() {
     setState(() {
       _imageFile = null;
       _imageUrl = null;
     });
   }
+
   Future<void> _uploadImage() async {
     if (_imageFile == null) return;
     final storageRef = FirebaseStorage.instance.ref().child('recipes/${DateTime.now().toString()}');
@@ -64,7 +67,7 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
       instructions: _instructions,
       cookingTime: int.tryParse(_cookingTimeController.text) ?? 0,
       imageUrl: _imageUrl!,
-      createdBy: 'userId',  // Replace with actual user ID
+      createdBy: 'userId', // Replace with actual user ID
       createdAt: Timestamp.now(),
     );
 
@@ -121,80 +124,96 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
   Widget build(BuildContext context) {
     final uploadState = ref.watch(recipeUploadProvider);
 
+    // Navigate back to the home page when the upload completes successfully
+    ref.listen<AsyncValue<void>>(recipeUploadProvider, (previous, next) {
+      if (next is AsyncData) {
+        // Navigate back to the home page
+        Navigator.pop(context);
+      }
+    });
+
     return Scaffold(
-      appBar: AppBar(title: Text('Create Recipe')),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (uploadState.isLoading) Center(child: CircularProgressIndicator()),
-            TextField(
-              controller: _titleController,
-              decoration: InputDecoration(labelText: 'Title'),
-            ),
-            TextField(
-              controller: _descriptionController,
-              decoration: InputDecoration(labelText: 'Description'),
-            ),
-            TextField(
-              controller: _cuisineController,
-              decoration: InputDecoration(labelText: 'Cuisine'),
-            ),
-            TextField(
-              controller: _mealTypeController,
-              decoration: InputDecoration(labelText: 'Meal Type'),
-            ),
-            TextField(
-              controller: _cookingTimeController,
-              decoration: InputDecoration(labelText: 'Cooking Time (in minutes)'),
-              keyboardType: TextInputType.number,
-            ),
-            SizedBox(height: 16),
-            Text('Ingredients', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            ..._ingredients.asMap().entries.map((entry) {
-              int index = entry.key;
-              return _buildIngredientFields(index);
-            }),
-            ElevatedButton(
-              onPressed: _addIngredient,
-              child: Text('Add Ingredient'),
-            ),
-            SizedBox(height: 16),
-            Text('Instructions', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            ..._instructions.asMap().entries.map((entry) {
-              int index = entry.key;
-              return _buildInstructionFields(index);
-            }),
-            ElevatedButton(
-              onPressed: _addInstruction,
-              child: Text('Add Instruction'),
-            ),
-            SizedBox(height: 16),
-            _imageFile != null
-                ? Column(
+      appBar: AppBar(title: const Text('Create Recipe')),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Image.file(_imageFile!),
-                SizedBox(height: 8),
-                TextButton(
-                  onPressed: _removeImage,
-                  child: Text('Remove Image'),
+                if (uploadState.isLoading) Center(child: CircularProgressIndicator()),
+                TextField(
+                  controller: _titleController,
+                  decoration: InputDecoration(labelText: 'Title'),
+                ),
+                TextField(
+                  controller: _descriptionController,
+                  decoration: InputDecoration(labelText: 'Description'),
+                ),
+                TextField(
+                  controller: _cuisineController,
+                  decoration: InputDecoration(labelText: 'Cuisine'),
+                ),
+                TextField(
+                  controller: _mealTypeController,
+                  decoration: InputDecoration(labelText: 'Meal Type'),
+                ),
+                TextField(
+                  controller: _cookingTimeController,
+                  decoration: InputDecoration(labelText: 'Cooking Time (in minutes)'),
+                  keyboardType: TextInputType.number,
+                ),
+                SizedBox(height: 16),
+                Text('Ingredients', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                ..._ingredients.asMap().entries.map((entry) {
+                  int index = entry.key;
+                  return _buildIngredientFields(index);
+                }),
+                ElevatedButton(
+                  onPressed: _addIngredient,
+                  child: Text('Add Ingredient'),
+                ),
+                SizedBox(height: 16),
+                Text('Instructions', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                ..._instructions.asMap().entries.map((entry) {
+                  int index = entry.key;
+                  return _buildInstructionFields(index);
+                }),
+                ElevatedButton(
+                  onPressed: _addInstruction,
+                  child: Text('Add Instruction'),
+                ),
+                SizedBox(height: 16),
+                _imageFile != null
+                    ? Column(
+                  children: [
+                    Image.file(_imageFile!),
+                    SizedBox(height: 8),
+                    TextButton(
+                      onPressed: _removeImage,
+                      child: Text('Remove Image'),
+                    ),
+                  ],
+                )
+                    : TextButton(
+                  onPressed: _pickImage,
+                  child: Text('Pick Image'),
+                ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: uploadState.isLoading ? null : _submitRecipe,
+                  child: Text('Submit Recipe'),
                 ),
               ],
-            )
-                : TextButton(
-              onPressed: _pickImage,
-              child: Text('Pick Image'),
             ),
-
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: uploadState.isLoading ? null : _submitRecipe,
-              child: Text('Submit Recipe'),
+          ),
+          if (uploadState.isLoading)
+            Container(
+              color: Colors.black54,
+              child: const Center(child: CircularProgressIndicator()),
             ),
-          ],
-        ),
-      ),
+        ],
+      )
     );
   }
 }
